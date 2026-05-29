@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "aidentity"
+version = "0.1.0"
+description = "YAML schema + CLI validator for AI agent identity continuity across sessions"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+  { name = "ktokw", email = "ktokw5@gmail.com" },
+]
+keywords = ["ai", "agent", "identity", "memory", "yaml", "schema"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "click>=8.0",
+  "pyyaml>=6.0",
+  "jsonschema>=4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0",
+  "pytest-cov",
+]
+
+[project.scripts]
+aidentity = "aidentity.validator:main"
+
+[project.urls]
+Homepage = "https://github.com/ktokw/aidentity"
+Repository = "https://github.com/ktokw/aidentity"
+Issues = "https://github.com/ktokw/aidentity"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aidentity*"]

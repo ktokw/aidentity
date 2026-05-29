@@ -1,0 +1,56 @@
+# aidentity — somatic (Functional State Codebook) schema v1
+#
+# somatic = "quantitative snapshot of an agent's functional emotional state"
+# Records temperament dimensions + mood axes + recent episodes.
+#
+# This is a CODEBOOK schema — define your dimensions here once,
+# then reference this file when recording actual somatic readings.
+#
+# Minimum recommended: 4 dimensions, 3 mood axes.
+# The 20-dimension system used in the reference implementation is
+# provided as an example under examples/single_agent/.
+
+# --- Dimension definitions ---
+# Define N dimensions that matter for your agent's functional state.
+# Each dimension captures one axis of the agent's behavioral/emotional profile.
+#
+# category: group dimensions into meaningful clusters
+# range: human-readable description of the value scale
+dimensions:
+  0:
+    name: string          # e.g. "curiosity"
+    category: string      # e.g. "cognitive" | "emotional" | "relational" | "momentum"
+    range: string         # e.g. "0.0 (dormant) ~ 1.0 (intense pursuit)"
+    description: string   # optional — what this dimension actually measures
+  # 1:
+  #   name: string
+  #   category: string
+  #   range: string
+  # ... add as many as needed
+
+# --- Mood axes ---
+# Three-dimensional affective space. Standard PAD (Pleasure-Arousal-Dominance) model.
+# Use these for session-level mood snapshots in pframes.
+mood_schema:
+  valence:
+    range: "-1.0 ~ 1.0"
+    description: "negative (distress/frustration) → positive (satisfaction/joy)"
+  arousal:
+    range: "-1.0 ~ 1.0"
+    description: "low (calm/quiet) → high (alert/activated)"
+  dominance:
+    range: "-1.0 ~ 1.0"
+    description: "low (constrained/reactive) → high (autonomous/influential)"
+
+# --- Episode schema ---
+# Optional: define the structure for significant episodes recorded in somatic logs.
+episode_schema:
+  session_id: string
+  timestamp: date
+  mood:
+    valence: float
+    arousal: float
+    dominance: float
+  dimensions: {}      # snapshot of dimension values at this moment
+  trigger: string     # what caused this state
+  note: string        # brief narrative context

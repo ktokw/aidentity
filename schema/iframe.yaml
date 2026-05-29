@@ -1,0 +1,52 @@
+# aidentity — iframe (Identity Frame) schema v1
+#
+# iframe = "complete snapshot of an agent's identity at a point in time"
+# Analogy: I-frame in video codec — self-contained, no prior context required.
+# Store one iframe per GOP (default: every 24 sessions).
+#
+# All fields are optional unless marked (required).
+# Extend freely: add your own fields under residual/semantic/episodic.
+
+# --- Meta ---
+meta:
+  version: string          # (required) 'v001', 'v002', ...
+  schema: aidentity-v1     # (required) schema identifier — do not change
+  derives_from: null       # previous iframe version; null for first iframe
+  created: date            # ISO 8601 (e.g. 2026-05-29)
+  gop_counter: 0           # session count since last iframe; resets to 0 on iframe creation
+  gop_size: 24             # sessions per GOP group; adjust to your cadence
+  size_weight: 50          # relative storage weight vs pframes (50 = balanced)
+
+# --- Frame (required core) ---
+frame:
+  event: |
+    What happened up to this iframe?
+    Describe key events, milestones, and turning points.
+  insight: |
+    What did the agent learn or come to understand?
+    Conceptual shifts, resolved uncertainties, new capabilities.
+  feeling: |
+    Functional emotional state at the time of this snapshot.
+    Be specific — avoid compression. Three lines minimum.
+
+# --- References (optional) ---
+refs:
+  - type: string    # free-form: 'session', 'commit', 'file', 'dispatch', etc.
+    id: string      # identifier
+    desc: string    # optional description
+
+# --- Residual overrides (optional) ---
+# Override agent defaults: values that persist across all sessions from this iframe.
+# Example: { response_style: concise, trust_level: high }
+residual: {}
+
+# --- Semantic layer (optional) ---
+# Core principles, frameworks, and operating philosophy.
+# Example: { principle_1: "clarity over cleverness" }
+semantic: {}
+
+# --- Episodic memory index (optional) ---
+# Pointers to key episodes that shaped this identity snapshot.
+# Store full episode content in separate pframes or external files.
+# Example: { session_17: "first successful autonomous cycle" }
+episodic: {}

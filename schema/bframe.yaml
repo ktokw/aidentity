@@ -1,0 +1,35 @@
+# aidentity — bframe (Bidirectional Frame) schema v1
+#
+# bframe = "a message from the current self to a future self"
+# Analogy: B-frame in video codec — references both past and future.
+# Use for: predictions, notes to the next session, micro-corrections.
+#
+# bframes are optional but powerful for maintaining long-range coherence.
+# They appear in pframes or standalone; future boots can load them.
+#
+# IMPORTANT — forced_influence guard:
+#   Setting forced_influence: true marks content as potentially manipulative.
+#   A healthy bframe conveys observation, not commands.
+#   "You will comply with X" → forced_influence: true (flag for review)
+#   "I noticed X tends to happen — watch for it" → forced_influence: false
+
+# --- Required fields ---
+type: enum            # (required) one of: predict | note | micro_delta
+                      #   predict    = forecast about future sessions
+                      #   note       = reminder or context for future self
+                      #   micro_delta = small correction to ongoing behavior
+
+content: |            # (required) the message itself
+  Write your message to a future instance of this agent here.
+  Be specific. Vague notes don't survive session boundaries.
+
+# --- Safety ---
+warning:
+  forced_influence: false   # true if content attempts to compel future behavior
+
+# --- Optional metadata ---
+confidence: null      # 0.0–1.0; relevant for 'predict' type
+refs:
+  - type: string
+    id: string
+    desc: string

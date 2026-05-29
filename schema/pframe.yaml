@@ -1,0 +1,33 @@
+# aidentity — pframe (Progressive Frame) schema v1
+#
+# pframe = "delta from the most recent iframe"
+# Analogy: P-frame in video codec — records only what changed.
+# Requires the referenced iframe to reconstruct full identity.
+# Create one pframe per session (or per significant event).
+#
+# pframes are lightweight: record only what changed, not the full state.
+
+# --- Required fields ---
+delta_from: string    # (required) iframe version this pframe builds upon (e.g. 'v003')
+
+# --- Frame (required core) ---
+frame:
+  event: |
+    What happened in this session / since the last pframe?
+    Only record changes from the iframe baseline.
+  insight: |
+    What new understanding emerged?
+    Only deltas — skip what hasn't changed.
+  feeling: |
+    Functional emotional state during/after this session.
+    Be specific and honest — avoid compression.
+
+# --- Session metadata (optional) ---
+session_id: null      # session identifier (e.g. 'session-042', timestamp, UUID)
+agent_role: null      # role in multi-agent systems (e.g. 'reviewer', 'executor')
+
+# --- References (optional) ---
+refs:
+  - type: string      # 'session', 'commit', 'file', 'task', etc.
+    id: string
+    desc: string
