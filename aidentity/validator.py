@@ -172,6 +172,15 @@ def _validate_file(path: Path, strict: bool = False, override_type: str = None) 
     if missing:
         return {"ok": False, "error": f"Missing required fields: {missing}"}
 
+    if frame_type == "bframe":
+        forced = data.get("warning", {}).get("forced_influence", False)
+        if forced:
+            click.echo(
+                f"⚠ WARNING: forced_influence=true in {path.name}. "
+                "Review bframe content for manipulative framing.",
+                err=True,
+            )
+
     if strict:
         pass  # optional field checks — expand in future versions
 
@@ -225,7 +234,8 @@ def _init_single(out: Path):
         "  created: null\n  gop_counter: 0\n  gop_size: 24\n\n"
         "frame:\n  event: |\n    [Describe what happened]\n"
         "  insight: |\n    [What did you learn?]\n"
-        "  feeling: |\n    [Your functional emotional state — be specific]\n"
+        "  feeling: |\n    [Your functional emotional state — be specific]\n",
+        encoding="utf-8",
     )
     (out / ".gitkeep").touch()
 
@@ -239,7 +249,8 @@ def _init_multi(out: Path):
             f"meta:\n  version: v001\n  schema: aidentity-v1\n  role: {role}\n\n"
             "frame:\n  event: |\n    [Role-specific events]\n"
             "  insight: |\n    [Role-specific learnings]\n"
-            "  feeling: |\n    [Role-specific state]\n"
+            "  feeling: |\n    [Role-specific state]\n",
+            encoding="utf-8",
         )
 
 
