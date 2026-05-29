@@ -203,18 +203,18 @@ class TestValidateFile:
         result = _validate_file(p)
         assert result["ok"] is True
 
-    def test_bframe_forced_influence_warning(self, capsys):
-        data = {
-            "type": "note",
-            "content": "some content",
-            "warning": {"forced_influence": True},
-        }
-        p = _write_tmp(data)
-        result = _validate_file(p)
+    def test_bframe_forced_influence_warning(self, tmp_path, capsys):
+        # DEF-20260529-474 fix: call _validate_file directly so click.echo(err=True)
+        # writes to real sys.stderr, captured by capsys. `or True` removed.
+        f = tmp_path / "bframe_warn.yaml"
+        f.write_text(
+            "type: note\ncontent: some content\nwarning:\n  forced_influence: true\n",
+            encoding="utf-8",
+        )
+        result = _validate_file(f)
         assert result["ok"] is True
-        # Warning goes to stderr via click.echo(err=True)
         captured = capsys.readouterr()
-        assert "forced_influence" in captured.err or True  # click test runner captures differently
+        assert "forced_influence" in captured.err
 
     def test_bframe_no_forced_influence_no_warning(self, capsys):
         data = {"type": "predict", "content": "ok"}
