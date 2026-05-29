@@ -46,3 +46,7 @@ Issues = "https://github.com/ktokw/aidentity"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["aidentity*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
