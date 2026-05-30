@@ -316,3 +316,135 @@ class TestValidateCLI:
         result = self.runner.invoke(cli, ["--version"])
         assert result.exit_code == 0
         assert "0.1.0" in result.output
+
+
+# ---------------------------------------------------------------------------
+# CLI integration — init command
+# ---------------------------------------------------------------------------
+
+class TestInitCLI:
+    def setup_method(self):
+        self.runner = CliRunner()
+
+    def test_init_single_creates_iframe(self, tmp_path):
+        out = tmp_path / "identity"
+        result = self.runner.invoke(cli, ["init", str(out)])
+        assert result.exit_code == 0
+        assert (out / "iframe_v001.yaml").exists()
+        assert "Created single-agent" in result.output
+
+    def test_init_single_iframe_valid_yaml(self, tmp_path):
+        out = tmp_path / "identity"
+        self.runner.invoke(cli, ["init", str(out)])
+        data = yaml.safe_load((out / "iframe_v001.yaml").read_text(encoding="utf-8"))
+        assert "meta" in data
+        assert "frame" in data
+
+    def test_init_multi_creates_role_dirs(self, tmp_path):
+        out = tmp_path / "identity"
+        result = self.runner.invoke(cli, ["init", "--mode", "multi", str(out)])
+        assert result.exit_code == 0
+        assert (out / "core" / "iframe_v001.yaml").exists()
+        assert (out / "roles" / "developer" / "role_iframe_v001.yaml").exists()
+        assert (out / "roles" / "reviewer" / "role_iframe_v001.yaml").exists()
+
+    def test_init_existing_dir_exits_1(self, tmp_path):
+        out = tmp_path / "identity"
+        out.mkdir()
+        result = self.runner.invoke(cli, ["init", str(out)])
+        assert result.exit_code == 1
+        assert "already exists" in result.output
+
+
+# ---------------------------------------------------------------------------
+# CLI integration — status command
+# ---------------------------------------------------------------------------
+
+class TestStatusCLI:
+    def setup_method(self):
+        self.runner = CliRunner()
+
+    def _write_iframe(self, d: Path, gop_counter: int = 3, gop_size: int = 24) -> Path:
+        f = d / "iframe_v001.yaml"
+        f.write_text(
+            f"meta:\n  version: v001\n  schema: aidentity-v1\n"
+            f"  gop_counter: {gop_counter}\n  gop_size: {gop_size}\n"
+            "frame:\n  event: x\n  insight: y\n  feeling: z\n",
+            encoding="utf-8",
+        )
+        return f
+
+    def test_status_shows_gop_counter(self, tmp_path):
+        self._write_iframe(tmp_path, gop_counter=5, gop_size=24)
+        result = self.runner.invoke(cli, ["status", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "5 / 24" in result.output
+
+    def test_status_shows_next_iframe_sessions(self, tmp_path):
+        self._write_iframe(tmp_path, gop_counter=10, gop_size=24)
+        result = self.runner.invoke(cli, ["status", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "14" in result.output  # 24 - 10 = 14 sessions remaining
+
+    def test_status_no_iframe_shows_hint(self, tmp_path):
+        result = self.runner.invoke(cli, ["status", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "No iframe" in result.output
+
+    def test_status_counts_pframes(self, tmp_path):
+        self._write_iframe(tmp_path)
+        for i in range(3):
+            (tmp_path / f"pframe_{i:03d}.yaml").write_text(
+                f"delta_from: v001\nframe:\n  event: e\n  insight: i\n  feeling: f\n",
+                encoding="utf-8",
+            )
+        result = self.runner.invoke(cli, ["status", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "3" in result.output
+
+
+# ---------------------------------------------------------------------------
+# CLI integration — boot command
+# ---------------------------------------------------------------------------
+
+class TestBootCLI:
+    def setup_method(self):
+        self.runner = CliRunner()
+
+    def _setup_identity(self, d: Path, n_pframes: int = 2):
+        (d / "iframe_v001.yaml").write_text(
+            "meta:\n  version: v001\n  schema: aidentity-v1\n"
+            "frame:\n  event: x\n  insight: y\n  feeling: z\n",
+            encoding="utf-8",
+        )
+        for i in range(n_pframes):
+            (d / f"pframe_{i:03d}.yaml").write_text(
+                f"delta_from: v001\nframe:\n  event: e\n  insight: i\n  feeling: f\n",
+                encoding="utf-8",
+            )
+
+    def test_boot_lite_shows_latest_pframe(self, tmp_path):
+        self._setup_identity(tmp_path, n_pframes=2)
+        result = self.runner.invoke(cli, ["boot", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "lite" in result.output
+        assert "pframe_001.yaml" in result.output
+
+    def test_boot_full_shows_all_frames(self, tmp_path):
+        self._setup_identity(tmp_path, n_pframes=2)
+        result = self.runner.invoke(cli, ["boot", "--mode", "full", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "full" in result.output
+        assert "pframe_000.yaml" in result.output
+        assert "pframe_001.yaml" in result.output
+
+    def test_boot_lite_no_pframes(self, tmp_path):
+        self._setup_identity(tmp_path, n_pframes=0)
+        result = self.runner.invoke(cli, ["boot", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "none found" in result.output
+
+    def test_boot_no_iframe_shows_hint(self, tmp_path):
+        result = self.runner.invoke(cli, ["boot", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "No iframe" in result.output
