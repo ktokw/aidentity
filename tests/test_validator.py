@@ -108,6 +108,24 @@ class TestDetectType:
     def test_filename_fallback_somatic(self):
         assert _detect_type({}, self._path("somatic_v3.yaml")) == "somatic"
 
+    # role_iframe (CHG-1833) — must be detected BEFORE iframe (both have meta.schema)
+    def test_role_iframe_via_schema(self):
+        data = {"meta": {"schema": "aidentity-role-v1", "version": "r001", "role": "developer"}}
+        assert _detect_type(data, self._path("whatever.yaml")) == "role_iframe"
+
+    def test_role_iframe_via_role_and_derives_from_core(self):
+        data = {"meta": {"role": "reviewer", "derives_from_core": "v007", "version": "r001"}}
+        assert _detect_type(data, self._path("whatever.yaml")) == "role_iframe"
+
+    def test_role_iframe_not_misdetected_as_iframe(self):
+        # a plain iframe (no role / no role schema) still detects as iframe
+        data = {"meta": {"schema": "aidentity-v1", "version": "v001"}}
+        assert _detect_type(data, self._path("whatever.yaml")) == "iframe"
+
+    def test_filename_fallback_role_iframe(self):
+        # 'role_iframe' must win over 'iframe' substring
+        assert _detect_type({}, self._path("role_iframe_v001.yaml")) == "role_iframe"
+
     def test_unknown_returns_none(self):
         assert _detect_type({}, self._path("mystery.yaml")) is None
 

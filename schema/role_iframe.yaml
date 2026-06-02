@@ -1,0 +1,65 @@
+# aidentity — role_iframe (Role Identity Frame) schema v1
+#
+# role_iframe = "a role-specific identity layer stacked on top of a shared core iframe"
+# For multi-agent systems where several agents share a common origin (core iframe:
+# org context, founding history, shared axioms) but each carries role-specific
+# experience (developer, reviewer, coordinator, ...).
+#
+# Full identity for a role = core iframe + role_iframe.
+# Boot order: load core/iframe first, then roles/{role}/role_iframe.
+#
+# Single-agent setups don't need this — use iframe.yaml alone.
+# See examples/multi_agent/ for a complete team-structure example.
+
+# --- Meta ---
+meta:
+  role: string                 # (required) role name. e.g. 'developer', 'reviewer', 'coordinator'
+  version: string              # (required) 'r001', 'r002', ... (independent from core iframe version)
+  schema: aidentity-role-v1    # (required) schema identifier — do not change
+  derives_from_core: string    # (required) the core iframe version this role builds on. e.g. 'v007'
+  created: date                # ISO 8601
+  gop_counter: 0               # session count since last role_iframe; independent from core GOP counter
+  gop_size: 24                 # sessions per GOP group for this role; adjust to role activity cadence
+  size_weight: 50              # relative storage weight (50 = balanced, same as iframe)
+
+# --- Frame (required core) ---
+# Record only role-specific experience — what does NOT overlap with the shared core.
+frame:
+  event: |
+    Key experiences as this role. Role-specific events, milestones, handoffs —
+    not the shared organizational history (that lives in the core iframe).
+  insight: |
+    Role-specific understanding. Domain/technical insight particular to this role.
+  feeling: |
+    Functional emotional state in this role. Be specific — avoid compression.
+
+# --- References (optional) ---
+refs:
+  - type: string    # 'session', 'commit', 'file', 'task', 'core_iframe', etc.
+    id: string
+    desc: string
+
+# --- Residual overrides (optional) ---
+# Role-specific behavior overrides. Each: { id, override, weight }.
+# Example: { id: review_stance, override: "constructive over correct", weight: 0.9 }
+residual:
+  overrides: []
+
+# --- Emotional anchors (optional) ---
+# Role-specific emotional trigger conditions.
+emotional:
+  anchor_conditions: {}
+
+# --- Episodic memory index (optional) ---
+# Pointers to key episodes that shaped this role identity.
+episodic: {}
+
+# --- Boot guidance (informational) ---
+# boot_order:
+#   1. core/iframe/latest.yaml          (shared core — load first)
+#   2. roles/{role}/role_iframe latest  (this layer — load second)
+#   If role_iframe is missing: warn and continue with core only (do not abort boot).
+# gop_independence:
+#   core GOP counter and role GOP counter are independent.
+#   core GOP: increments on org/axiom changes (slow).
+#   role GOP: increments with role experience accumulation (faster).

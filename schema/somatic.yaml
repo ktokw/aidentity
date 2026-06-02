@@ -38,9 +38,12 @@ mood_schema:
   arousal:
     range: "-1.0 ~ 1.0"
     description: "low (calm/quiet) → high (alert/activated)"
-  dominance:
+  dominance:                  # OPTIONAL — omit if your model uses 2-axis mood (valence+arousal)
     range: "-1.0 ~ 1.0"
     description: "low (constrained/reactive) → high (autonomous/influential)"
+    optional: true            # PAD's 3rd axis. Some implementations use 2-axis + categorical
+                              # emotion label instead (valence + arousal + dominant_emotion).
+                              # In that case omit dominance — validate still passes.
 
 # --- Episode schema ---
 # Optional: define the structure for significant episodes recorded in somatic logs.

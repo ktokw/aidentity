@@ -25,7 +25,7 @@ except ImportError:
 
 
 SCHEMA_DIR = Path(__file__).parent.parent / "schema"
-VALID_FRAME_TYPES = {"iframe", "pframe", "bframe", "somatic"}
+VALID_FRAME_TYPES = {"iframe", "role_iframe", "pframe", "bframe", "somatic"}
 
 
 @click.group()
@@ -188,7 +188,15 @@ def _validate_file(path: Path, strict: bool = False, override_type: str = None) 
 
 
 def _detect_type(data: dict, path: Path) -> str:
-    if "meta" in data and "schema" in data.get("meta", {}):
+    meta = data.get("meta", {}) if isinstance(data, dict) else {}
+    # role_iframe must be checked BEFORE iframe — it also has meta.schema.
+    # Distinguished by schema='aidentity-role-v1' or presence of meta.role + derives_from_core.
+    if isinstance(meta, dict):
+        if meta.get("schema") == "aidentity-role-v1":
+            return "role_iframe"
+        if "role" in meta and "derives_from_core" in meta:
+            return "role_iframe"
+    if "meta" in data and "schema" in meta:
         return "iframe"
     if "delta_from" in data:
         return "pframe"
@@ -197,7 +205,8 @@ def _detect_type(data: dict, path: Path) -> str:
     if "dimensions" in data and "mood_schema" in data:
         return "somatic"
     name = path.stem.lower()
-    for t in VALID_FRAME_TYPES:
+    # longest match first so 'role_iframe' wins over 'iframe' in filename detection
+    for t in sorted(VALID_FRAME_TYPES, key=len, reverse=True):
         if t in name:
             return t
     return None
@@ -206,6 +215,8 @@ def _detect_type(data: dict, path: Path) -> str:
 def _required_fields(frame_type: str) -> list:
     return {
         "iframe": ["meta.version", "meta.schema", "frame.event", "frame.insight", "frame.feeling"],
+        "role_iframe": ["meta.role", "meta.version", "meta.schema", "meta.derives_from_core",
+                        "frame.event", "frame.insight", "frame.feeling"],
         "pframe": ["delta_from", "frame.event", "frame.insight", "frame.feeling"],
         "bframe": ["type", "content"],
         "somatic": ["dimensions", "mood_schema"],
@@ -246,7 +257,9 @@ def _init_multi(out: Path):
     for role in ("developer", "reviewer"):
         (roles / role).mkdir(parents=True)
         (roles / role / "role_iframe_v001.yaml").write_text(
-            f"meta:\n  version: v001\n  schema: aidentity-v1\n  role: {role}\n\n"
+            f"meta:\n  role: {role}\n  version: r001\n  schema: aidentity-role-v1\n"
+            "  derives_from_core: v001\n  created: null\n"
+            "  gop_counter: 0\n  gop_size: 24\n  size_weight: 50\n\n"
             "frame:\n  event: |\n    [Role-specific events]\n"
             "  insight: |\n    [Role-specific learnings]\n"
             "  feeling: |\n    [Role-specific state]\n",
