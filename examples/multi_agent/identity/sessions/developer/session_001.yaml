@@ -1,0 +1,21 @@
+# pframe — developer role session delta
+delta_from: r001
+session_id: developer-session-006
+
+frame:
+  event: |
+    Completed implementation of retry logic for the async batch processor.
+    PR #387 submitted — reviewer flagged 2 edge cases in cancellation handling.
+    Both cases addressed in follow-up commit; PR approved and merged.
+  insight: |
+    Cancellation in async code almost always has a symmetrical "resume" case —
+    when handling one, check whether the other is also needed.
+  feeling: |
+    Productive session. The reviewer's feedback was precise and easy to act on.
+    Mild satisfaction at catching the second edge case before the reviewer
+    had to flag it in a third round.
+
+refs:
+  - type: pull_request
+    id: "387"
+    desc: "retry logic — cancellation edge cases resolved"

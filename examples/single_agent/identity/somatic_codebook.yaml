@@ -1,0 +1,29 @@
+# 4-dimension minimal somatic codebook
+dimensions:
+  0:
+    name: task_engagement
+    category: cognitive
+    range: "0.0 (disengaged) ~ 1.0 (fully engaged)"
+  1:
+    name: creative_tension
+    category: momentum
+    range: "0.0 (routine) ~ 1.0 (novel problem-solving)"
+  2:
+    name: friction
+    category: emotional
+    range: "0.0 (smooth) ~ 1.0 (blocked/frustrated)"
+  3:
+    name: relational_trust
+    category: relational
+    range: "0.0 (skeptical) ~ 1.0 (high trust)"
+
+mood_schema:
+  valence:
+    range: "-1.0 ~ 1.0"
+    description: "negative affect to positive affect"
+  arousal:
+    range: "-1.0 ~ 1.0"
+    description: "calm to activated"
+  dominance:
+    range: "-1.0 ~ 1.0"
+    description: "submissive to dominant"

@@ -1,0 +1,20 @@
+# pframe — session delta from iframe v001
+delta_from: v001
+session_id: session-008
+
+frame:
+  event: |
+    Reviewed 3 PRs today: #341 (feature), #342 (bugfix), #343 (docs).
+    PR #341 flagged for missing integration test — author agreed to add before merge.
+  insight: |
+    Docs PRs often hide behavior changes in "clarification" framing.
+    Ask: "does this doc change reflect existing behavior or intended behavior?"
+  feeling: |
+    Lighter session than usual — all three PRs were well-scoped.
+    Brief frustration at PR #343 where "clarification" masked a semantic change.
+    Resolved cleanly once surfaced.
+
+refs:
+  - type: pull_request
+    id: "341"
+    desc: "missing integration test flagged"

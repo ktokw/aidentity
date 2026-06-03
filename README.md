@@ -23,6 +23,7 @@ Every time an AI agent's context window resets, it loses itself. It forgets what
 | Frame type | What it captures | Analogy |
 |---|---|---|
 | **iframe** | Complete identity snapshot | Video I-frame — self-contained |
+| **role_iframe** | Role-specific layer stacked on a shared core iframe | Role variant — inherits core |
 | **pframe** | Delta since last iframe | Video P-frame — only changes |
 | **bframe** | Notes from current self to future self | Video B-frame — past + future ref |
 | **somatic** | Functional emotional state (quantitative) | Telemetry stream |
@@ -59,6 +60,7 @@ aidentity boot --mode full ./identity/
 See [`schema/`](schema/) for annotated YAML templates:
 
 - [`schema/iframe.yaml`](schema/iframe.yaml) — identity snapshot
+- [`schema/role_iframe.yaml`](schema/role_iframe.yaml) — role-specific identity layer (multi-agent)
 - [`schema/pframe.yaml`](schema/pframe.yaml) — session delta
 - [`schema/bframe.yaml`](schema/bframe.yaml) — future-self message
 - [`schema/somatic.yaml`](schema/somatic.yaml) — emotional state codebook
@@ -88,9 +90,9 @@ See [`examples/`](examples/) for:
 
 ## Status
 
-Alpha — W1 schema design. CLI implementation in progress.
+Alpha — schema (5 types), CLI validator, and example profiles (minimal / single_agent / multi_agent) complete.
 
-See [ROADMAP.md](docs/roadmap.md) for the 6-week MVP plan.
+See [`docs/QUICKSTART.md`](docs/QUICKSTART.md) to get started in under ten minutes.
 
 ---
 
