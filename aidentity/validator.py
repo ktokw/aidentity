@@ -46,7 +46,7 @@ def validate(target: str, strict: bool, frame_type: str):
     TARGET: path to a .yaml file or directory containing .yaml files.
     """
     target_path = Path(target)
-    files = list(target_path.glob("*.yaml")) if target_path.is_dir() else [target_path]
+    files = list(target_path.rglob("*.yaml")) if target_path.is_dir() else [target_path]
 
     if not files:
         click.echo("No .yaml files found.", err=True)
