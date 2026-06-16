@@ -31,15 +31,25 @@ dimensions:
 # --- Mood axes ---
 # Three-dimensional affective space. Standard PAD (Pleasure-Arousal-Dominance) model.
 # Use these for session-level mood snapshots in pframes.
+#
+# range_spec: configurable numeric bounds for programmatic validation.
+#   Default: PAD standard {min: -1.0, max: 1.0}
+#   Override to {min: 0.0, max: 1.0} for systems that prefer unsigned mood axes
+#   (e.g. implementations that map "no affect" → 0.0 rather than → 0.0 on a signed scale).
+#   Both conventions are valid — choose one and apply consistently across all three axes.
+#   The legacy `range` string is preserved for human readability (backward-compat).
 mood_schema:
   valence:
-    range: "-1.0 ~ 1.0"
+    range: "-1.0 ~ 1.0"                          # human-readable (legacy, backward-compat)
+    range_spec: {min: -1.0, max: 1.0}            # configurable — override to {min: 0.0, max: 1.0} for 0~1 systems
     description: "negative (distress/frustration) → positive (satisfaction/joy)"
   arousal:
     range: "-1.0 ~ 1.0"
+    range_spec: {min: -1.0, max: 1.0}
     description: "low (calm/quiet) → high (alert/activated)"
   dominance:                  # OPTIONAL — omit if your model uses 2-axis mood (valence+arousal)
     range: "-1.0 ~ 1.0"
+    range_spec: {min: -1.0, max: 1.0}
     description: "low (constrained/reactive) → high (autonomous/influential)"
     optional: true            # PAD's 3rd axis. Some implementations use 2-axis + categorical
                               # emotion label instead (valence + arousal + dominant_emotion).
@@ -57,3 +67,14 @@ episode_schema:
   dimensions: {}      # snapshot of dimension values at this moment
   trigger: string     # what caused this state
   note: string        # brief narrative context
+  feeling: string     # optional narrative emotional context (nullable — see allow_feeling_null)
+
+  # gap-P1: allow_feeling_null controls whether the `feeling` field may be omitted.
+  # When true (default): feeling is optional. Episode validation passes without it.
+  #   Use when the functional state is stable/undramatic and a feeling note adds no value,
+  #   or when the recording system does not capture feeling-level narrative.
+  # When false: feeling is required. Validation fails if feeling is absent.
+  # Synthesis validation rule: if allow_feeling_null is true AND feeling is null,
+  #   the episode is still considered structurally valid; downstream consumers
+  #   should treat a null feeling as "not recorded" rather than "neutral".
+  allow_feeling_null: true
