@@ -5,5 +5,6 @@ dist/
 build/
 .venv/
 venv/
+.venv-bootstrap/
 .pytest_cache/
 *.egg

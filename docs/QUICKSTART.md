@@ -10,8 +10,13 @@ If you already read the [README](../README.md), the five frame types (iframe / r
 
 ## Install
 
+Not yet on PyPI — install from a clone:
+
 ```bash
-pip install aidentity
+git clone https://github.com/ktokw/aidentity && cd aidentity
+./bootstrap.sh          # one command: install + run the full flow below in a demo dir
+# or, to install into your own project:
+pip install -e .
 aidentity --version
 ```
 

@@ -6,9 +6,11 @@ Give your AI agent a persistent identity — one that survives context resets, m
 
 ```bash
 git clone https://github.com/ktokw/aidentity && cd aidentity
-pip install -e .                          # PyPI release: coming
-python examples/quickstart/run.py         # boot an agent, live a session, encode it
+./bootstrap.sh                            # one command: installs, then runs init -> validate -> status -> boot
+python examples/quickstart/run.py         # or: boot an agent, live a session, encode it
 ```
+
+Not yet on PyPI — install from source (`pip install -e .`) until it is.
 
 ---
 
@@ -79,7 +81,10 @@ Full design: [`spec/FILM_MEMORY.md`](spec/FILM_MEMORY.md) · [`spec/FRAME_SCHEMA
 ## CLI Quick Start
 
 ```bash
-pip install -e .
+git clone https://github.com/ktokw/aidentity && cd aidentity
+./bootstrap.sh          # try it in one command, throwaway demo dir
+
+pip install -e .        # or install from source into your own project
 
 # Initialize identity directory
 aidentity init               # single agent

@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Fixed — packaging
+
+- `pyproject.toml`: `build-backend` pointed at a nonexistent
+  `setuptools.backends.legacy:build`, which made `pip install -e .` fail
+  outright (`BackendUnavailable: Cannot import 'setuptools.backends.legacy'`).
+  Corrected to `setuptools.build_meta`. Verified: fresh venv, `pip install -e .`,
+  full test suite (62 passed), and `aidentity init/validate/status/boot` all work.
+
+### Added
+
+- `bootstrap.sh` — one-command install + demo (`init` → `validate` → `status`
+  → `boot --mode lite` in a throwaway directory). README/QUICKSTART now lead
+  with this since the package isn't published to PyPI yet.
+
 ### Added — schema/somatic.yaml
 
 **gap-S2: arousal range 범용화 (range_spec 추가)**
