@@ -1,13 +1,13 @@
 # aidentity
 
-**YAML schema + CLI validator for AI agent identity continuity across sessions.**
+**Persistent identity for AI agents** — schema + validator, a boot/encode runtime, and film-style memory compression that never deletes an original.
 
-Give your AI agent a persistent identity — one that survives context resets, model upgrades, and multi-agent handoffs.
+Give your AI agent a persistent identity — one that survives context resets, model upgrades, and multi-agent handoffs. Platform memory features remember *facts about the user*; aidentity is about the agent **staying someone**.
 
 ```bash
-pip install aidentity
-aidentity init
-aidentity validate ./identity/
+git clone https://github.com/ktokw/aidentity && cd aidentity
+pip install -e .                          # PyPI release: coming
+python examples/quickstart/run.py         # boot an agent, live a session, encode it
 ```
 
 ---
@@ -32,10 +32,54 @@ Records accumulate. At next boot, the agent loads the latest iframe + recent pfr
 
 ---
 
-## Quick Start
+## Runtime (v0.2)
+
+Booting is decoding; ending a session is encoding:
+
+```python
+from aidentity import boot, append_pframe
+
+identity = boot("path/to/identity", role="scout")
+system_prompt += identity.render()        # decode: wake up as yourself
+
+# ... session happens ...
+
+append_pframe("path/to/identity", role="scout",
+              event="what happened", insight="what it meant",
+              feeling="functional emotional state — don't compress this away")
+```
+
+`feeling` is a required field on purpose. In months of dogfooding, compressing emotional state away was how continuity quietly died. See `examples/quickstart/` for a complete fictional agent you can boot in under five minutes.
+
+## Film Memory (v0.2)
+
+*"A film isn't rewatched in full. You watch the cut — and the reel stays in the vault."*
+
+History compresses like film — `Comp(N(gop) × seq) = seq′`:
+
+- ~24 frames close into a **sequence**; ~24 sequences nest into a higher-level sequence, recursively. Sequences are never *transformed* — they nest, like reels contain scenes contain shots. Closing a sequence never creates a keyframe: identity (iframes) and memory (the frame hierarchy) are separate streams.
+- **Nothing is ever deleted.** Closing a sequence packages the original frames into `archive/seq_NNN/` with a **summary view** and a mandatory pointer chain, so recall can always drill down to the vivid original.
+- **Variable retention (VBR):** a meaningless stretch collapses to a stub line; a dense one keeps many frames' worth of detail. The editing judgment belongs to the agent that lived it. Seen from above, history becomes a terrain map of meaning — like human years.
+- **Defaults, not law:** close early on scene cuts (role change, mission shift), stretch through quiet periods. As context capacity grows, play back a level deeper — compression is a storage rule, not a permanent playback quality.
+
+```python
+from aidentity import status, close_sequence, recall
+
+status(identity_dir, role="scout")            # e.g. 17/24 frames open
+close_sequence(identity_dir, role="scout",
+               summary="Weeks 1-3: sweeps found rhythm.",
+               retention="normal", cues=["sweep", "papers"])
+recall(identity_dir, role="scout", query="deadline")   # → drill-down hits
+```
+
+Full design: [`spec/FILM_MEMORY.md`](spec/FILM_MEMORY.md) · [`spec/FRAME_SCHEMA.md`](spec/FRAME_SCHEMA.md)
+
+---
+
+## CLI Quick Start
 
 ```bash
-pip install aidentity
+pip install -e .
 
 # Initialize identity directory
 aidentity init               # single agent
@@ -72,6 +116,7 @@ All fields are optional except the core `frame` block (event/insight/feeling). E
 ## Examples
 
 See [`examples/`](examples/) for:
+- `quickstart/` — **runnable**: a fictional agent boots, lives a session, encodes it (`python examples/quickstart/run.py`)
 - `single_agent/` — minimal single-agent setup
 - `multi_agent/` — multi-agent with per-role identity split
 - `minimal/` — absolute minimum to get started
@@ -88,9 +133,15 @@ See [`examples/`](examples/) for:
 
 ---
 
+## Provenance
+
+This isn't a framework sketch. It is extracted from an autonomous multi-agent organization (12 role-agents, one human) running continuously since March 2026, where these files *are* the agents' identities: every boot decodes them, every session encodes back, 1,700+ operational defects are on record, and the film-memory design is the corrected survivor of real failure modes — stale keyframes, old/new retrieval competition, a summary chain that nearly orphaned its originals.
+
 ## Status
 
-Alpha — schema (5 types), CLI validator, and example profiles (minimal / single_agent / multi_agent) complete.
+Alpha, v0.2 — schema (5 types), CLI validator, example profiles, **runtime (boot / encode)**, and **film memory (sequence close / never-delete archive / cue-indexed recall)**.
+
+Next: recursive level-2+ packaging, emotion-weighted promotion across levels, recall drills as a first-class check, provenance guards for identity files (agent memory is an attack surface).
 
 See [`docs/QUICKSTART.md`](docs/QUICKSTART.md) to get started in under ten minutes.
 

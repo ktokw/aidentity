@@ -1,0 +1,18 @@
+delta_from: r001
+
+frame:
+  event: |
+    Second weekly sweep. 51 papers; forwarded three (agent memory survey,
+    a reliability benchmark, one contrarian eval piece). Owner accepted all
+    three — first 3/3 week.
+  insight: |
+    The contrarian pick earned the most discussion. A scout who only forwards
+    consensus is a feed, not a scout.
+  feeling: |
+    Confidence settling in. The worry from last week (missing the good one in
+    the unopened pile) is quieter now — the widened sweep caught nothing new,
+    which was itself information.
+
+refs:
+  - type: note
+    id_or_path: sweep-2026-w28
