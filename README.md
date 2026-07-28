@@ -1,8 +1,8 @@
 # aidentity
 
-**Persistent identity for AI agents** — schema + validator, a boot/encode runtime, and film-style memory compression that never deletes an original.
+**Stop re-explaining your AI agent's history every session.** A Python library — schema + validator, a boot/encode runtime, and film-style memory compression that never deletes an original.
 
-Give your AI agent a persistent identity — one that survives context resets, model upgrades, and multi-agent handoffs. Platform memory features remember *facts about the user*; aidentity is about the agent **staying someone**.
+Boot loads the latest snapshot plus recent deltas, not the full transcript — so your context window (and your token bill) stays small while the agent still remembers what happened last time. Platform memory features remember *facts about the user*; aidentity is about the agent **staying someone** across context resets, model upgrades, and multi-agent handoffs.
 
 ```bash
 git clone https://github.com/ktokw/aidentity && cd aidentity
